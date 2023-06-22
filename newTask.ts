@@ -1,24 +1,24 @@
 import { App, Modal, Setting } from 'obsidian';
-import { Schedule } from 'types';
+import { Breakdown } from 'types';
 
 
 export default class NewTaskModal extends Modal {
-	schedule: Schedule;
+	breakdown: Breakdown;
 	taskCount: number;
-	onSubmit: (schedule: Schedule) => void;
+	onSubmit: (breakdown: Breakdown) => void;
 
-	constructor(app: App, onSubmit: (schedule: Schedule) => void) {
+	constructor(app: App, onSubmit: (breakdown: Breakdown) => void) {
 		super(app);
 		this.taskCount = 0;
 		this.onSubmit = onSubmit;
-		this.schedule = { title: '', startTime: [], tasks: [] };
+		this.breakdown = { title: '', startTime: [], tasks: [] };
 	}
 
 	private createTask() {
 		const { contentEl } = this;
 		const idx = this.taskCount++;
 		//const thisTask = contentEl.childNodes[idx]
-		this.schedule.tasks.push({
+		this.breakdown.tasks.push({
 			name: String(this.taskCount),
 			length: 5
 		})
@@ -27,7 +27,7 @@ export default class NewTaskModal extends Modal {
 			.addText((text) => {
 				text.setPlaceholder('Name')
 					.onChange((name) => {
-						this.schedule.tasks[idx].name = name
+						this.breakdown.tasks[idx].name = name
 					})
 			})
 
@@ -42,7 +42,7 @@ export default class NewTaskModal extends Modal {
 					.addOption('30', '30 Minutes')
 					.setValue('5')
 					.onChange((choice) => {
-						this.schedule.tasks[idx].length = parseInt(choice);
+						this.breakdown.tasks[idx].length = parseInt(choice);
 					})
 			})
 		/* .addButton((button) => {
@@ -59,13 +59,13 @@ export default class NewTaskModal extends Modal {
 
 	onOpen() {
 		const { contentEl } = this;
-		contentEl.setText('Create new task schedule');
+		contentEl.setText('Create new task breakdown');
 		new Setting(contentEl)
 			.addText((text) => {
 				text
-					.setPlaceholder('Schedule Name')
+					.setPlaceholder('Breakdown Name')
 					.onChange((name) => {
-						this.schedule.title = name;
+						this.breakdown.title = name;
 					})
 			})
 			.addButton((newTask) => {
@@ -80,7 +80,7 @@ export default class NewTaskModal extends Modal {
 				text
 					.setPlaceholder('Start Time')
 					.onChange((time) => {
-						this.schedule.startTime = time.split(':', 2).map(Number);
+						this.breakdown.startTime = time.split(':', 2).map(Number);
 					})
 			})
 
@@ -91,7 +91,7 @@ export default class NewTaskModal extends Modal {
 					.setCta()
 					.onClick((_ev) => {
 						this.close();
-						this.onSubmit(this.schedule);
+						this.onSubmit(this.breakdown);
 					});
 			});
 		this.createTask();

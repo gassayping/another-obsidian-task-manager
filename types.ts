@@ -3,7 +3,7 @@ export interface Task {
 	length: number
 }
 
-export interface Schedule {
+export interface Breakdown {
 	title: string,
 	startTime: number[],
 	tasks: Task[]

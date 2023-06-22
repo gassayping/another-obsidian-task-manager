@@ -1,12 +1,12 @@
 import { Modal, App, Setting, TFile, Notice } from 'obsidian';
-import { Schedule } from 'types';
+import { Breakdown } from 'types';
 
 export default class LoadTemplateModal extends Modal {
 	selection: TFile;
 	startTime: number[];
-	onSubmit: (schedule: Schedule) => void;
+	onSubmit: (breakdown: Breakdown) => void;
 
-	constructor(app: App, onSubmit: (schedule: Schedule) => void) {
+	constructor(app: App, onSubmit: (breakdown: Breakdown) => void) {
 		super(app);
 		this.onSubmit = onSubmit;
 	}
@@ -43,9 +43,9 @@ export default class LoadTemplateModal extends Modal {
 					.onClick(async () => {
 						this.close();
 						const string = await this.app.vault.read(this.selection);
-						const schedule = JSON.parse(string) as Schedule;
-						schedule.startTime = this.startTime;
-						this.onSubmit(schedule);
+						const breakdown = JSON.parse(string) as Breakdown;
+						breakdown.startTime = this.startTime;
+						this.onSubmit(breakdown);
 					})
 			});
 	}
