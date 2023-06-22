@@ -14,7 +14,7 @@ export default class AnotherTaskManager extends Plugin {
 			'icon': 'file-plus',
 			'editorCallback': (editor) => {
 				new NewTaskModal(this.app, (schedule) => {
-					this.writeSchedule(schedule, editor)
+					this.writeSchedule(schedule, editor);
 				}).open();
 			}
 		});
@@ -25,9 +25,9 @@ export default class AnotherTaskManager extends Plugin {
 			'icon': 'book-plus',
 			'callback': () => {
 				new NewTaskModal(this.app, async (schedule) => {
-					const vault = this.app.vault
-					try { await vault.createFolder('ATM_Templates') } catch { }
-					vault.create(`ATM_Templates/${schedule.title}.md`, JSON.stringify(schedule));
+					const vault = this.app.vault;
+					vault.createFolder('ATM_Templates').catch(() => { })
+						.finally(() => vault.create(`ATM_Templates/${schedule.title}.md`, JSON.stringify(schedule)))
 				}).open();
 			}
 		});
@@ -45,11 +45,16 @@ export default class AnotherTaskManager extends Plugin {
 
 	private writeSchedule(schedule: Schedule, editor: Editor) {
 		const displayText = [`## ${schedule.title}`];
-		let startTime = new Date(Date.now()).setMinutes((Math.ceil(new Date(Date.now()).getMinutes() / 5) * 5), 0, 0);
+		let [hours, minutes] = schedule.startTime
 		schedule.tasks.forEach((task, idx) => {
-			const taskTime = new Date(startTime += ((schedule.tasks[idx - 1]?.length ?? 0) * 1000 * 60));
-			const timeText = `${taskTime.getHours()}:${taskTime.getMinutes() > 9 ? taskTime.getMinutes() : '0' + taskTime.getMinutes()}`;
-			displayText.push(`- [ ] ${timeText} - ${task.name}`)
+			minutes += schedule.tasks[idx - 1]?.length ?? 0;
+			if (minutes >= 60) {
+				const carry = Math.floor(minutes / 60);
+				hours += carry;
+				minutes -= carry * 60;
+			}
+			const time = hours.toString() + (minutes > 9 ? ':' : ':0') + minutes.toString();
+			displayText.push(`- [ ] ${time} - ${task.name}`);
 		});
 		displayText.push('');
 		editor.replaceRange(displayText.join('\n'), editor.getCursor());

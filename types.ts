@@ -5,5 +5,6 @@ export interface Task {
 
 export interface Schedule {
 	title: string,
+	startTime: number[],
 	tasks: Task[]
 }

@@ -3,15 +3,15 @@ import { Schedule } from 'types';
 
 
 export default class NewTaskModal extends Modal {
-	private schedule: Schedule;
-	private taskCount: number;
+	schedule: Schedule;
+	taskCount: number;
 	onSubmit: (schedule: Schedule) => void;
 
 	constructor(app: App, onSubmit: (schedule: Schedule) => void) {
 		super(app);
 		this.taskCount = 0;
 		this.onSubmit = onSubmit;
-		this.schedule = { title: '', tasks: [] };
+		this.schedule = { title: '', startTime: [], tasks: [] };
 	}
 
 	private createTask() {
@@ -76,6 +76,14 @@ export default class NewTaskModal extends Modal {
 						this.createTask();
 					})
 			})
+			.addText((text) => {
+				text
+					.setPlaceholder('Start Time')
+					.onChange((time) => {
+						this.schedule.startTime = time.split(':', 2).map(Number);
+					})
+			})
+
 			.addButton((create) => {
 				create
 					.setButtonText('Create')

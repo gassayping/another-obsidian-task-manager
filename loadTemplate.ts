@@ -3,6 +3,7 @@ import { Schedule } from 'types';
 
 export default class LoadTemplateModal extends Modal {
 	selection: TFile;
+	startTime: number[];
 	onSubmit: (schedule: Schedule) => void;
 
 	constructor(app: App, onSubmit: (schedule: Schedule) => void) {
@@ -19,16 +20,21 @@ export default class LoadTemplateModal extends Modal {
 			this.close();
 			return;
 		}
-		this.selection = templates[0]
+		this.selection = templates[0];
 		new Setting(contentEl)
 			.addDropdown((dropdown) => {
-				const fileNames = templates.map((v) => v.name.substring(0, v.name.length - 3)) as string[]
+				const fileNames = templates.map((v) => v.basename) as string[]
 				dropdown
 					//@ts-expect-error
 					.addOptions(fileNames)
 					.onChange((choice) => {
 						this.selection = templates[parseInt(choice)];
 					})
+			})
+			.addText((text) => {
+				text
+					.setPlaceholder('Start Time')
+					.onChange((time) => this.startTime = time.split(':', 2).map(Number));
 			})
 			.addButton(async (button) => {
 				button
@@ -38,6 +44,7 @@ export default class LoadTemplateModal extends Modal {
 						this.close();
 						const string = await this.app.vault.read(this.selection);
 						const schedule = JSON.parse(string) as Schedule;
+						schedule.startTime = this.startTime;
 						this.onSubmit(schedule);
 					})
 			});
